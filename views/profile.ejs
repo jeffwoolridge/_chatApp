@@ -1,0 +1,4 @@
+<%- include("partials/header", { title: username + "'s Profile", user }) %>
+
+<h2>Profile of <%= username %></h2>
+<p>Joined on: <%= new Date(joinDate).toLocaleDateString() %></p>

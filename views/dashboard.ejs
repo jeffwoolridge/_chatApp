@@ -1,0 +1,20 @@
+<%- include("partials/header", { title: "Dashboard", user }) %>
+
+<h2>Notifications</h2>
+
+<div id="notifications">
+  <% if (notifications.length === 0) { %>
+    <p>No notifications yet.</p>
+  <% } %>
+
+  <% notifications.forEach(n => { %>
+    <div class="notification">
+      <strong><%= new Date(n.createdAt).toLocaleTimeString() %></strong> —
+      <%= n.content %>
+    </div>
+  <% }) %>
+</div>
+
+<script src="/dashboard.js"></script>
+</body>
+</html>

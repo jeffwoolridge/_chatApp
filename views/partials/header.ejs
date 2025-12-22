@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || "CHAPP" %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <strong>Chat App</strong>
+    </div>
+    <nav>
+      <% if (user) { %>
+        <span>Welcome, <%= user.username %>!</span>
+        <a href="/dashboard">Dashboard</a>
+        <% if (user.isAdmin) { %>
+          <a href="/admin">Admin Panel</a>
+        <% } %>
+        <a href="/chat">Chat</a>
+        <a href="/profile/<%= user.username %>">Profile</a>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/signup">Sign Up</a>
+      <% } %>
+    </nav>
+  </header>
+  <div class="container">
+

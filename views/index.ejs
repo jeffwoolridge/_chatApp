@@ -1,0 +1,13 @@
+<%- include("partials/header", { title: "Chat", user: typeof user !== 'undefined' ? user : null }) %>
+
+<h1>Welcome to Chat App</h1>
+
+<script>
+  const ws = new WebSocket(`ws://${location.host}?username=guest`);
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.onlineUsers !== undefined) {
+      document.getElementById("onlineUsers").textContent = data.onlineUsers;
+    }
+  };
+</script>

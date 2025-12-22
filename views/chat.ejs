@@ -1,0 +1,22 @@
+<%- include("partials/header", { title: user.username + "'s Chat", user }) %>
+
+  <h1>Welcome, <%= user.username %></h1>
+  <p>Online Users: <span id="online-count">0</span></p>
+
+  <div id="messages">
+    <% messages.forEach(msg => { %>
+      <div>
+        <strong><%= msg.senderName %></strong> 
+       [<%= msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : "Unknown" %>]: 
+
+        <%= msg.content %>
+      </div>
+    <% }) %>
+  </div>
+  <div id="online-count"></div>
+  <form id="chat-form">
+    <input id="message-input" type="text">
+    <button>Send</button>
+  </form>
+  <script src="/chat.js"></script>
+
