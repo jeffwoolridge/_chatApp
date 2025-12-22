@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import User from "./src/models/User.js";
 
-await mongoose.connect("mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0");
+await mongoose.connect("mongodb://localhost:27017/chatapp");
 
 const adminExists = await User.findOne({ username: "admin" });
 

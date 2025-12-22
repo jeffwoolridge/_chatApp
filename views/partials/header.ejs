@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title || "CHAPP" %></title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-  <header>
-    <div>
-      <strong>Chat App</strong>
-    </div>
-    <nav>
-      <% if (user) { %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || "Rodney Rants" %></title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/images/fisherman2.svg" type="image/svg" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <a href="/"
+          ><img
+            src="/images/fisherman1.svg"
+            alt="Logo"
+            class="logo"
+            width="70"
+            height="70"
+        /></a>
+        <h1><strong>Rodney Rants</strong></h1>
+      </div>
+      <nav>
+        <% if (user) { %>
         <span>Welcome, <%= user.username %>!</span>
         <a href="/dashboard">Dashboard</a>
         <% if (user.isAdmin) { %>
-          <a href="/admin">Admin Panel</a>
+        <a href="/admin">Admin Panel</a>
         <% } %>
         <a href="/chat">Chat</a>
         <a href="/profile/<%= user.username %>">Profile</a>
         <a href="/logout">Logout</a>
-      <% } else { %>
+        <% } else { %>
         <a href="/login">Login</a>
         <a href="/signup">Sign Up</a>
-      <% } %>
-    </nav>
-  </header>
-  <div class="container">
-
+        <% } %>
+      </nav>
+    </header>
+    <div class="container"></div>
+  </body>
+</html>
