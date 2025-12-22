@@ -207,7 +207,7 @@ wss.on("connection", (ws) => {
 
 /* -------------------- START SERVER -------------------- */
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 // Start the server
 // UNCOMMENT AND USE FOR PROD
 //const PORT = 3000
