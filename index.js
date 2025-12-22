@@ -208,6 +208,19 @@ wss.on("connection", (ws) => {
 /* -------------------- START SERVER -------------------- */
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(` Server running on http://localhost:${PORT}`);
+// Start the server
+// UNCOMMENT AND USE FOR PROD
+//const PORT = 3000
+//app.listen(PORT, '0.0.0.0', () => {
+//    console.log(`Server is running on http://localhost:${PORT}`);
+//    console.log(`Default users:
+//    Admin - Email: admin@example.com
+//    User - Email: user@example.com`);
+// });
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Default users:
+    Admin - Email: admin@example.com
+    User - Email: user@example.com`);
 });
