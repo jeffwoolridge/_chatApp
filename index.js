@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true }); // use noServer for upgrade
 
 /* -------------------- DATABASE -------------------- */
-mongoose.connect("mongodb://127.0.0.1:27017/chatapp")
+mongoose.connect("mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0")
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error(err));
 
