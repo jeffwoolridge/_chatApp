@@ -1,6 +1,10 @@
-<%- include("partials/header", { title: "Chat", user: typeof user !== 'undefined' ? user : null }) %>
+<%- include("partials/header", { title: "Chat", user: typeof user !==
+'undefined' ? user : null }) %>
 
-<h1>Welcome to Chat App</h1>
+<div class="card">
+  <h1>Rodney Rants</h1>
+  <h3>What are ya at?</h3>
+</div>
 
 <script>
   const ws = new WebSocket(`ws://${location.host}?username=guest`);
