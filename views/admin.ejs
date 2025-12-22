@@ -1,69 +1,83 @@
 <%- include("partials/header", { title: "Admin Panel", user }) %>
 
-<h1>Admin Panel</h1>
+<div class="container">
+  <h1>Admin Panel</h1>
 
-<!-- Notification Form -->
-<form action="/admin/notify" method="POST">
-  <input type="text" name="message" placeholder="Send notification" required>
-  <button type="submit">Send</button>
-</form>
+  <!-- Notification Form -->
+  <form action="/admin/notify" method="POST">
+    <input
+      type="text"
+      name="message"
+      placeholder="Send notification"
+      required
+    />
+    <button type="submit">Send</button>
+  </form>
 
+  <script>
+    const form = document.getElementById("notify-form");
+    const input = document.getElementById("notification-input");
 
-<script>
-const form = document.getElementById('notify-form');
-const input = document.getElementById('notification-input');
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!input.value.trim()) return alert("Notification cannot be empty");
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!input.value.trim()) return alert("Notification cannot be empty");
+      try {
+        const res = await fetch("/admin/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: input.value }), // use "content" on server
+        });
 
-  try {
-    const res = await fetch('/admin/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: input.value }) // use "content" on server
+        const data = await res.json();
+        if (data.error) alert(data.error);
+        else input.value = "";
+      } catch (err) {
+        console.error(err);
+        alert("Error sending notification");
+      }
     });
+  </script>
 
-    const data = await res.json();
-    if (data.error) alert(data.error);
-    else input.value = '';
-  } catch (err) {
-    console.error(err);
-    alert("Error sending notification");
-  }
-});
-</script>
+  <hr />
 
-<hr>
-
-<!-- User List Table -->
-<table border="1" cellpadding="5" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Username</th>
-      <th>Role</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% users.forEach(u => { %>
+  <!-- User List Table -->
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
       <tr>
         <td><%= u.username %></td>
         <td><%= u.isAdmin ? "Admin" : "User" %></td>
         <td><%= u.isBanned ? "Banned" : "Active" %></td>
         <td>
           <% if (!u.isBanned) { %>
-            <form action="/admin/ban/<%= u._id %>" method="POST" style="display:inline;">
-              <button type="submit">Ban</button>
-            </form>
+          <form
+            action="/admin/ban/<%= u._id %>"
+            method="POST"
+            style="display: inline"
+          >
+            <button type="submit">Ban</button>
+          </form>
           <% } else { %>
-            <form action="/admin/unban/<%= u._id %>" method="POST" style="display:inline;">
-              <button type="submit">Unban</button>
-            </form>
+          <form
+            action="/admin/unban/<%= u._id %>"
+            method="POST"
+            style="display: inline"
+          >
+            <button type="submit">Unban</button>
+          </form>
           <% } %>
         </td>
       </tr>
-    <% }) %>
-  </tbody>
-</table>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

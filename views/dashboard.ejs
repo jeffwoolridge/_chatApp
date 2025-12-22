@@ -1,8 +1,10 @@
 <%- include("partials/header", { title: "Dashboard", user }) %>
 
-<h2>Notifications</h2>
+<div class="container">
+<h1>Notifications</h1>
 
-<div id="notifications">
+
+<div id="notifications" class="card">
   <% if (notifications.length === 0) { %>
     <p>No notifications yet.</p>
   <% } %>

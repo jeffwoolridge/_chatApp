@@ -20,9 +20,10 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true }); // use noServer for upgrade
 
 /* -------------------- DATABASE -------------------- */
-mongoose.connect("mongodb://localhost:27017/chatapp")
+mongoose
+  .connect("mongodb://localhost:27017/chatapp")
   .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error(err));
+  .catch((err) => console.error(err));
 
 /* -------------------- MIDDLEWARE -------------------- */
 app.set("view engine", "ejs");
@@ -34,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 const sessionParser = session({
   secret: "supersecretkey",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
 });
 app.use(sessionParser);
 app.use(adminRoutes);
@@ -44,8 +45,6 @@ function isAuthenticated(req, res, next) {
   if (!req.session.user) return res.redirect("/login");
   next();
 }
-
-
 
 app.get("/", (req, res) => {
   if (req.session.user) return res.redirect("/dashboard");
@@ -59,10 +58,13 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
 });
 
 /* ---------- SIGNUP ---------- */
-app.get("/signup", (req, res) => res.render("signup", { error: null, user: null }));
+app.get("/signup", (req, res) =>
+  res.render("signup", { error: null, user: null })
+);
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) return res.render("signup", { error: "All fields required" });
+  if (!username || !password)
+    return res.render("signup", { error: "All fields required" });
 
   const exists = await User.findOne({ username });
   if (exists) return res.render("signup", { error: "Username already exists" });
@@ -71,13 +73,18 @@ app.post("/signup", async (req, res) => {
   const user = new User({ username, password: hashed });
   await user.save();
 
-  req.session.user = { _id: user._id, username: user.username, isAdmin: user.isAdmin };
+  req.session.user = {
+    _id: user._id,
+    username: user.username,
+    isAdmin: user.isAdmin,
+  };
   res.redirect("/dashboard");
 });
 
-
 /* ---------- LOGIN ---------- */
-app.get("/login", (req, res) => res.render("login", { error: null, user: null }));
+app.get("/login", (req, res) =>
+  res.render("login", { error: null, user: null })
+);
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
@@ -86,10 +93,13 @@ app.post("/login", async (req, res) => {
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.render("login", { error: "Invalid credentials" });
 
-  req.session.user = { _id: user._id, username: user.username, isAdmin: user.isAdmin };
+  req.session.user = {
+    _id: user._id,
+    username: user.username,
+    isAdmin: user.isAdmin,
+  };
   res.redirect("/dashboard");
 });
-
 
 /* ---------- PROFILE ---------- */
 app.get("/profile/:username", isAuthenticated, async (req, res) => {
@@ -99,7 +109,7 @@ app.get("/profile/:username", isAuthenticated, async (req, res) => {
   res.render("profile", {
     username: user.username,
     joinDate: user.joinDate,
-    user: req.session.user
+    user: req.session.user,
   });
 });
 
@@ -110,10 +120,9 @@ app.get("/chat", isAuthenticated, async (req, res) => {
   res.render("chat", {
     user: req.session.user,
     messages,
-    showAdminPanel: req.session.user.isAdmin
+    showAdminPanel: req.session.user.isAdmin,
   });
 });
-
 
 /* ---------- LOGOUT ---------- */
 app.get("/logout", (req, res) => req.session.destroy(() => res.redirect("/")));
@@ -138,7 +147,7 @@ server.on("upgrade", (req, socket, head) => {
     }
 
     wss.handleUpgrade(req, socket, head, (ws) => {
-      ws.user = req.session.user; 
+      ws.user = req.session.user;
       wss.emit("connection", ws);
     });
   });
@@ -171,7 +180,7 @@ wss.on("connection", (ws) => {
           sender: ws.user._id,
           senderName: ws.user.username, // ✅ guaranteed now
           content,
-          isSystem: false
+          isSystem: false,
         });
       }
 
@@ -179,7 +188,7 @@ wss.on("connection", (ws) => {
         message = await Message.create({
           senderName: "System", // ✅ always set
           content,
-          isSystem: true
+          isSystem: true,
         });
       }
 
@@ -188,13 +197,12 @@ wss.on("connection", (ws) => {
         type,
         content: message.content,
         sender: { username: message.senderName },
-        createdAt: message.createdAt
+        createdAt: message.createdAt,
       };
 
-      wss.clients.forEach(client => {
+      wss.clients.forEach((client) => {
         if (client.readyState === 1) client.send(JSON.stringify(payload));
       });
-
     } catch (err) {
       console.error(err);
     }
@@ -218,9 +226,6 @@ const PORT = process.env.PORT || 4000;
 //    User - Email: user@example.com`);
 // });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Default users:
-    Admin - Email: admin@example.com
-    User - Email: user@example.com`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
