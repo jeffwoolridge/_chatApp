@@ -40,10 +40,10 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  next();
-});
+// app.use((req, res, next) => {
+//   res.locals.user = req.session.user || null;
+//   next();
+// });
 
 const sessionParser = session({
   secret: "supersecretkey",
@@ -71,9 +71,11 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
 });
 
 /* ---------- SIGNUP ---------- */
-app.get("/signup", (req, res) =>
-  res.render("signup", { error: null, user: null })
-);
+app.get("/signup", (req, res) => {
+  res.render("signup", {
+    user: req.session?.user || null,
+  });
+});
 app.post("/signup", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password)
