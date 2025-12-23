@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const ws = new WebSocket(`ws://${location.hostname}:4000`);
+  const protocol = location.protocol === "https:" ? "wss" : "ws";
+  const ws = new WebSocket(`${protocol}://${location.hostname}:4000`);
+
+  ws.onopen = () => console.log("✅ WebSocket connected");
+  ws.onerror = (err) => console.error("❌ WebSocket error:", err);
 
   const messagesEl = document.getElementById("messages");
   const form = document.getElementById("chat-form");
