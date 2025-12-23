@@ -23,6 +23,8 @@ const wss = new WebSocketServer({ noServer: true }); // use noServer for upgrade
 mongoose
   .connect(
     "mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0",
+
+    //"mongodb://localhost:27017/chatapp",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

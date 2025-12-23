@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const MONGO_URI =
-  "mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0"; // \ // adjust your URI
+  //"mongodb://localhost:27017/chatapp"; // adjust your URI
+  "mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0";
 
 export const connectDB = async () => {
   try {
