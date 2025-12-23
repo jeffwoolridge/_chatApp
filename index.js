@@ -21,9 +21,16 @@ const wss = new WebSocketServer({ noServer: true }); // use noServer for upgrade
 
 /* -------------------- DATABASE -------------------- */
 mongoose
-  .connect("mongodb://localhost:27017/chatapp")
+  .connect(
+    "mongodb+srv://jmw:$ullY15243@cluster0.hejvqyv.mongodb.net/?appName=Cluster0",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+    }
+  )
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error(err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 /* -------------------- MIDDLEWARE -------------------- */
 app.set("view engine", "ejs");
@@ -216,15 +223,6 @@ wss.on("connection", (ws) => {
 /* -------------------- START SERVER -------------------- */
 
 const PORT = process.env.PORT || 4000;
-// Start the server
-// UNCOMMENT AND USE FOR PROD
-//const PORT = 3000
-//app.listen(PORT, '0.0.0.0', () => {
-//    console.log(`Server is running on http://localhost:${PORT}`);
-//    console.log(`Default users:
-//    Admin - Email: admin@example.com
-//    User - Email: user@example.com`);
-// });
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://localhost:${PORT}`);
