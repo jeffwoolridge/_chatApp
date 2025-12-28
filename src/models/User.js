@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
   isBanned: { type: Boolean, default: false },
-  joinDate: { type: Date, default: Date.now }
+  joinDate: { type: Date, default: Date.now },
 });
 
 // Hash password before saving
@@ -25,7 +25,7 @@ export async function createAdmin() {
     const newAdmin = new User({
       username: "admin",
       password: "securepassword",
-      isAdmin: true
+      isAdmin: true,
     });
     await newAdmin.save();
     console.log("Admin user created!");

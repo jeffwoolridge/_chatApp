@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import Notification from "./src/models/Notification.js";
 
 import User from "./src/models/User.js";
@@ -17,21 +17,17 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ noServer: true }); // use noServer for upgrade
+const wss = new WebSocketServer({ noServer: true });
 
-/* -------------------- DATABASE -------------------- */
+/* --------------- DATABASE -------------------- */
+const MONGO_URI = "mongodb+srv://jwool:ooguR2ku@chatapp.iu8ztkq.mongodb.net/";
+
 mongoose
-  .connect(
-    "mongodb+srv://jwool:ooguR2ku@rodney.d3asv95.mongodb.net/",
-
-    //"mongodb://localhost:27017/chatapp",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-    }
-  )
-  .then(() => console.log("✅ MongoDB connected"))
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    console.log("Connected to DB:", mongoose.connection.name); // should now be 'chatapp'
+  })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 /* -------------------- MIDDLEWARE -------------------- */
@@ -73,46 +69,71 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
 
 /* ---------- SIGNUP ---------- */
 app.get("/signup", (req, res) => {
-  res.render("signup");
+  res.render("signup", { error: null });
 });
+
 app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password)
-    return res.render("signup", { error: "All fields required" });
+  let { username, password } = req.body;
 
-  const exists = await User.findOne({ username });
-  if (exists) return res.render("signup", { error: "Username already exists" });
+  username = username?.trim().toLowerCase();
+  password = password?.trim();
 
-  const hashed = await bcrypt.hash(password, 10);
-  const user = new User({ username, password: hashed });
-  await user.save();
+  if (!username || !password) {
+    return res.render("signup", { error: "All fields are required" });
+  }
 
-  req.session.user = {
-    _id: user._id,
-    username: user.username,
-    isAdmin: user.isAdmin,
-  };
-  res.redirect("/dashboard");
+  try {
+    const exists = await User.findOne({ username });
+    if (exists)
+      return res.render("signup", { error: "Username already exists" });
+
+    const hashed = bcrypt.hashSync(password, 10); // synchronous hashing
+    const user = new User({ username, password: hashed });
+    await user.save();
+
+    console.log("✅ User saved:", user);
+
+    req.session.user = {
+      _id: user._id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+
+    res.redirect("/dashboard");
+  } catch (err) {
+    console.error("❌ Signup error:", err);
+    res.render("signup", { error: "Failed to create user" });
+  }
 });
 
 /* ---------- LOGIN ---------- */
-app.get("/login", (req, res) =>
-  res.render("login", { error: null, user: null })
-);
+app.get("/login", (req, res) => {
+  res.render("login", { error: null });
+});
+
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user) return res.render("login", { error: "Invalid credentials" });
+  let { username, password } = req.body;
+  username = username?.trim().toLowerCase();
+  password = password?.trim();
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.render("login", { error: "Invalid credentials" });
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.render("login", { error: "Invalid credentials" });
 
-  req.session.user = {
-    _id: user._id,
-    username: user.username,
-    isAdmin: user.isAdmin,
-  };
-  res.redirect("/dashboard");
+    const match = bcrypt.compareSync(password, user.password); // synchronous compare
+    if (!match) return res.render("login", { error: "Invalid credentials" });
+
+    req.session.user = {
+      _id: user._id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+    };
+
+    res.redirect("/dashboard");
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    res.render("login", { error: "Login failed" });
+  }
 });
 
 /* ---------- PROFILE ---------- */
@@ -231,6 +252,6 @@ wss.on("connection", (ws) => {
 
 const PORT = process.env.PORT || 4000;
 
-server.listen(PORT, "0.0.0.0", () => {
+server.listen(PORT, "0.0.0.0", async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
