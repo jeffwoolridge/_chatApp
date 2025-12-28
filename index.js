@@ -20,7 +20,8 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true });
 
 /* --------------- DATABASE -------------------- */
-const MONGO_URI = "mongodb+srv://jwool:ooguR2ku@chatapp.iu8ztkq.mongodb.net/";
+const MONGO_URI =
+  "mongodb+srv://jwool:ooguR2ku@chatapp.iu8ztkq.mongodb.net/chatapp";
 
 mongoose
   .connect(MONGO_URI)
