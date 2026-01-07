@@ -80,30 +80,28 @@ app.post("/signup", async (req, res) => {
   password = password?.trim();
 
   if (!username || !password) {
-    return res.render("signup", { error: "All fields are required" });
+    return res.status(400).send("All fields are required");
   }
 
   try {
     const exists = await User.findOne({ username });
-    if (exists)
-      return res.render("signup", { error: "Username already exists" });
+    if (exists) return res.status(400).send("Username already exists");
 
-    const hashed = bcrypt.hashSync(password, 10); // synchronous hashing
+    const hashed = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashed });
     await user.save();
 
-    console.log("✅ User saved:", user);
-
+    // Save session
     req.session.user = {
       _id: user._id,
       username: user.username,
       isAdmin: user.isAdmin,
     };
 
-    res.redirect("/dashboard");
+    res.send("Signup successful!");
   } catch (err) {
-    console.error("❌ Signup error:", err);
-    res.render("signup", { error: "Failed to create user" });
+    console.error("Signup error:", err);
+    res.status(500).send("Failed to create user");
   }
 });
 
@@ -114,15 +112,16 @@ app.get("/login", (req, res) => {
 
 app.post("/login", async (req, res) => {
   let { username, password } = req.body;
+
   username = username?.trim().toLowerCase();
   password = password?.trim();
 
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.render("login", { error: "Invalid credentials" });
+    if (!user) return res.status(400).send("Invalid credentials");
 
-    const match = bcrypt.compareSync(password, user.password); // synchronous compare
-    if (!match) return res.render("login", { error: "Invalid credentials" });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).send("Invalid credentials");
 
     req.session.user = {
       _id: user._id,
@@ -132,8 +131,8 @@ app.post("/login", async (req, res) => {
 
     res.redirect("/dashboard");
   } catch (err) {
-    console.error("❌ Login error:", err);
-    res.render("login", { error: "Login failed" });
+    console.error("Login error:", err);
+    res.status(500).send("Login failed");
   }
 });
 
